@@ -25,23 +25,28 @@ while True:
             
             # Detecting handedness
 
-            for idx, handedness in enumerate(results.multi_handedness):
+            for hand, handedness in enumerate(results.multi_handedness):
                 label = handedness.classification[0].label
                 score = handedness.classification[0].score
 
                 # Print handedness information for each detected hand
-                print(f"Hand {idx + 1}: {label} hand, Confidence: {score:.2f}")
+                print(f"Hand {hand + 1}: {label} hand, Confidence: {score:.2f}")
 
-            # Defining finger coordinates
+                # Defining finger coordinates
 
-            if results.multi_hand_landmarks[0].landmark[4].x > results.multi_hand_landmarks[0].landmark[3].x:
-                print("Thumb is up")
-                finger_states.append(1)
+                if label == "Left":
+                    if results.multi_hand_landmarks[hand].landmark[4].x > results.multi_hand_landmarks[hand].landmark[3].x:
+                        print("{label} thumb is up")
+                        finger_states.append(1)
+                if label == "Right":
+                    if results.multi_hand_landmarks[hand].landmark[4].x < results.multi_hand_landmarks[hand].landmark[3].x:
+                        print("{label} thumb is up")
+                        finger_states.append(1)
 
-            for tip_id in fingertip_ids:
-                if tip_id != 4 and results.multi_hand_landmarks[0].landmark[tip_id].y < results.multi_hand_landmarks[0].landmark[tip_id - 1].y and results.multi_hand_landmarks[0].landmark[tip_id].y < results.multi_hand_landmarks[0].landmark[tip_id - 2].y:
-                    print("Finger is up")
-                    finger_states.append(1)
+                for tip_id in fingertip_ids:
+                    if tip_id != 4 and results.multi_hand_landmarks[hand].landmark[tip_id].y < results.multi_hand_landmarks[hand].landmark[tip_id - 1].y and results.multi_hand_landmarks[hand].landmark[tip_id].y < results.multi_hand_landmarks[hand].landmark[tip_id - 2].y:
+                        print("Finger is up")
+                        finger_states.append(1)
 
             # Extract and draw landmarks on the image
 
