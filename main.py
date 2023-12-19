@@ -1,8 +1,5 @@
 import cv2
-from datetime import datetime
 import mediapipe as mp
-
-image_capture_folder = "captures/"
 
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5, min_tracking_confidence=0.5)
@@ -17,7 +14,8 @@ while True:
     if not result:
         break
 
-    image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    flipped_frame = cv2.flip(frame, 1) # TODO: Test with different webcams.
+    image = cv2.cvtColor(flipped_frame, cv2.COLOR_BGR2RGB)
 
     results = hands.process(image)
 
@@ -31,18 +29,17 @@ while True:
                 label = handedness.classification[0].label
                 score = handedness.classification[0].score
 
-                # Print handedness information for each detected hand
                 print(f"Hand {hand + 1}: {label} hand, Confidence: {score:.2f}")
 
                 # Defining finger coordinates
 
                 if label == "Left":
                     if results.multi_hand_landmarks[hand].landmark[4].x > results.multi_hand_landmarks[hand].landmark[3].x:
-                        print("{label} thumb is up")
+                        print(f"{label} thumb is up")
                         finger_states.append(1)
                 if label == "Right":
                     if results.multi_hand_landmarks[hand].landmark[4].x < results.multi_hand_landmarks[hand].landmark[3].x:
-                        print("{label} thumb is up")
+                        print(f"{label} thumb is up")
                         finger_states.append(1)
 
                 for tip_id in fingertip_ids:
@@ -51,13 +48,12 @@ while True:
                         finger_states.append(1)
 
             # Extract and draw landmarks on the image
-            
-            mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+            mp_drawing.draw_landmarks(flipped_frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
             finger_count = finger_states.count(1)
-            cv2.putText(frame, f"Finger count: {finger_count}", (10, 50), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
+            cv2.putText(flipped_frame, f"Finger count: {finger_count}", (10, 50), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
 
-    cv2.imshow("What's cookin', good lookin'?", frame)
+    cv2.imshow("What's cookin', good lookin'?", flipped_frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
