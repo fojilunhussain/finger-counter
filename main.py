@@ -35,7 +35,7 @@ while True:
                     cv2.circle(frame, (cx, cy), 5, (255, 0, 0), cv2.FILLED)
 
             finger_count = finger_states.count(1)
-            cv2.putText(frame, f"Finger count: {finger_count}", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(frame, f"Finger count: {finger_count}", (10, 50), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
 
     cv2.imshow("What's cookin', good lookin'?", frame)
 
