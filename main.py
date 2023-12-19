@@ -6,6 +6,8 @@ image_capture_folder = "captures/"
 
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5, min_tracking_confidence=0.5)
+mp_drawing = mp.solutions.drawing_utils
+
 fingertip_ids = [4, 8, 12, 16, 20]
 
 cap = cv2.VideoCapture(0)
@@ -49,15 +51,8 @@ while True:
                         finger_states.append(1)
 
             # Extract and draw landmarks on the image
-
-            for id, hand_lm in enumerate(hand_landmarks.landmark):
-                h, w, c = frame.shape
-                cx, cy = int(hand_lm.x * w), int(hand_lm.y * h)
-
-                if id in fingertip_ids:
-                    cv2.circle(frame, (cx, cy), 5, (0, 0, 255), cv2.FILLED)
-                else:
-                    cv2.circle(frame, (cx, cy), 5, (255, 0, 0), cv2.FILLED)
+            
+            mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
             finger_count = finger_states.count(1)
             cv2.putText(frame, f"Finger count: {finger_count}", (10, 50), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
