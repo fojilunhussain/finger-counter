@@ -1,2 +1,2 @@
-# sign-language
-sign language to text
+# finger-counter
+finger counter to text
